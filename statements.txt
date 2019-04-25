@@ -1,0 +1,229 @@
+Select all columns and rows from the movies table:
+
+   SELECT * 
+   FROM movies;
+
+Select only the title and id of the first 10 rows:
+
+  SELECT title, id 
+  FROM movies
+  LIMIT 10
+
+Find the movie with the id of 485:
+
+  SELECT title , id
+  FROM movies
+  WHERE id = 485
+
+Find the id (only that column) of the movie Made in America (1993):
+
+  SELECT title , id
+  FROM movies
+  WHERE title LIKE '%Made in America%'
+
+Find the first 10 sorted alphabetically:
+
+  SELECT title, id
+  FROM movies m
+  WHERE id < 11
+  ORDER BY m.title ASC
+  LIMIT 10
+
+Find all movies from 2002:
+
+  SELECT title, id
+  FROM movies m
+  WHERE m.title LIKE '%(2002)%'
+
+Find out what year the Godfather came out:
+
+  SELECT title, id
+  FROM movies m
+  WHERE m.title LIKE '%Godfather%'
+
+Without using joins find all the comedies:
+
+  SELECT title, genres, id
+  FROM movies m
+  WHERE m.genres LIKE '%Comedy%'
+
+Find all comedies in the year 2000:
+
+  SELECT title, genres, id
+  FROM movies m
+  WHERE m.genres LIKE '%Comedy%' AND m.title LIKE '%(2000)%'
+
+Find any movies that are about death and are a comedy
+
+  SELECT m.title, m.genres, t.tag, t.movie_id
+  FROM
+	  tags t
+	  LEFT JOIN movies m ON t.movie_id = m.id
+	  WHERE m.genres LIKE '%comedy%' AND t.tag LIKE '%dark%'
+
+Find any movies from either 2001 or 2002 with a title containing super:
+
+  SELECT title, id
+  FROM movies m
+  WHERE m.title LIKE '%super%(2001)' OR m.title LIKE '%super%(2002)'
+
+Create a new table called actors (We are going to pretend the actor can only play in one movie). The table should include name, character name, foreign key to movies and date of birth at least plus an id field.
+
+  INSERT INTO actors (movie_id, name, char_name, DOB )
+  VALUES 
+  (256, "Steve Carell", "michael scott", "08-26-1962"),
+  (1, "Tom Hanks", "woody", "07-9-1956"),
+  (56, "Robert Downey Jr.", "tony stark", "04-04-1965"),
+  (125, "Ryan Reynolds", "wade wilson", "10-23-1976"),
+  (678, "Hugh Jackman", "logan", "10-12-1968"),
+  (546, "Tom Cruise", "Maverick", "07-03-1962"),
+  (45, "Dwayne Johnson", "The Rock", "06-23-1970"),
+  (287, "Scarlett Johansson", "Black Widow", "02-16-1980"),
+  (647, "Josh Brolin", "Thanos", "12-12-1962"),
+  (867, "Samuel L. Jackson", "Jules Winnfield", "01-27-1961")
+
+Pick 3 movies and create insert statements for 10 actors each. You should use the multi value insert statements:
+
+  INSERT INTO actors (movie_id, name)
+  VALUES (524, "Steve Carell"),
+  (25, "Steve Carell"),
+  (960, "Steve Carell"),
+  (345, "Tom Hanks"),
+  (489, "Tom Hanks"),
+  (46, "Tom Hanks"),
+  (567, "Robert Downey Jr"),
+  (860, "Robert Downey Jr"),
+  (125, "Robert Downey Jr"),
+  (298, "Ryan Reynolds"),
+  (35, "Ryan Reynolds"),
+  (239, "Ryan Reynolds"),
+  (459, "Hugh Jackman"),
+  (150, "Hugh Jackman"),
+  (309, "Hugh Jackman"),
+  (547, "Tom Cruise"),
+  (320, "Tom Cruise"),
+  (1000, "Tom Cruise"),
+  (12, "Dwayne Johnson"),
+  (168, "Dwayne Johnson"),
+  (736, "Dwayne Johnson"),
+  (148, "Scarlett Johansson"),
+  (367, "Scarlett Johansson"),
+  (838, "Scarlett Johansson"),
+  (520, "Josh Brolin"),
+  (196, "Josh Brolin"),
+  (993, "Josh Brolin"),
+  (724, "Samuel L. Jackson"),
+  (620, "Samuel L. Jackson"),
+  (1023, "Samuel L. Jackson")
+
+Create a new column in the movie table to hold the MPAA rating. UPDATE 5 different movies to their correct rating: 
+  UPDATE movies
+      SET mpaa_rating = "G"
+      WHERE id = 1;
+  UPDATE movies
+      SET mpaa_rating = "PG"
+      WHERE id = 2;
+  UPDATE movies
+      SET mpaa_rating = "PG-13"
+      WHERE id = 3;
+  UPDATE movies
+      SET mpaa_rating = "R"
+      WHERE id = 4;
+  UPDATE movies
+      SET mpaa_rating = "PG"
+      WHERE id = 5;
+
+With Joins: 
+
+Find all the ratings for the movie Godfather, show just the title and the rating:
+
+  SELECT r.rating, m.title
+      FROM 
+        ratings r
+        LEFT JOIN movies m ON r.movie_id = m.id
+        WHERE m.title LIKE '%Godfather%'
+        ORDER BY m.id ASC
+
+Order the previous objective by newest to oldest:
+
+  SELECT r.rating, m.title
+      FROM 
+        ratings r
+        LEFT JOIN movies m ON r.movie_id = m.id
+        WHERE m.title LIKE '%Godfather%'
+        ORDER BY m.id DESC
+
+Find the comedies from 2005 and get the title and imdbid from the links table:
+
+  SELECT l.imdb_id as imdb_id, m.title, m.genres
+      FROM 
+        links l
+        LEFT JOIN movies m ON l.movie_id = m.id
+        WHERE m.title LIKE '%(2005)%' AND m.genres LIKE '%comedy%'
+
+Find all movies that have no ratings:
+
+SELECT r.rating, m.title
+      FROM 
+        ratings r
+        LEFT JOIN movies m ON r.movie_id = m.id
+        WHERE r.rating IS NULL;
+
+Complete the following aggregation objectives:
+
+Get the average rating for a movie
+
+  SELECT r.movie_id, AVG(rating) as avg_rating
+  FROM ratings r
+  GROUP BY movie_id
+
+Get the total ratings for a movie
+
+  SELECT r.movie_id, COUNT(rating) as total_ratings
+  FROM ratings r
+  GROUP BY movie_id
+
+Get the total movies for a genre
+
+  SELECT m.genres, COUNT(genres) as total_genres
+  FROM movies m
+  GROUP BY genres
+
+
+Get the average rating for a user
+
+  SELECT r.user_id, AVG(rating) as avg_rating
+  FROM ratings r
+  GROUP BY user_id
+
+Find the user with the most ratings
+
+  SELECT r.user_id, COUNT(rating) as most_ratings
+  FROM ratings r
+  GROUP BY user_id
+  ORDER BY most_ratings DESC
+  LIMIT 1
+
+Find the user with the highest average rating
+
+  SELECT r.user_id, AVG(rating) as avg_rating
+  FROM ratings r
+  GROUP BY user_id
+  ORDER BY avg_rating DESC
+  LIMIT 1
+
+Find the user with the highest average rating with more than 50 reviews
+
+  SELECT r.user_id, AVG(rating) as avg_rating
+    FROM ratings r
+    GROUP BY user_id
+    HAVING COUNT(r.rating) > 50
+    ORDER BY avg_rating DESC
+    LIMIT 1
+
+Find the movies with an average rating over 4
+
+  SELECT r.movie_id, AVG(rating) as avg_rating
+    FROM ratings r
+    GROUP BY movie_id
+    HAVING avg_rating > 4
